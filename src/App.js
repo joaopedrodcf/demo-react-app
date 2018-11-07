@@ -1,24 +1,64 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Todo from './Todo';
 
 class App extends Component {
+  state = {
+    checked:"All",
+    localId: 1,
+    Todo:"",
+    TodoItems:[
+      { id:1, name: 'update the todo list', isDone: false }
+    ]
+  }
+  UpdateToDo = event => {
+    this.setState({
+      Todo: event.target.value
+    })
+  }
+  AddTodoItem = ()=>{
+    this.setState(prevState=>({
+      localId: prevState.localId +1,
+      TodoItems: [...prevState.TodoItems, {id: prevState.localId+1, name:prevState.Todo, isDone: false}]
+    }))
+  }
+  ToggleDone = event=> {
+    const id = event.target.value;
+    this.setState(prevState => ({
+      TodoItems: prevState.TodoItems.map(item => {
+        if(item.id === id){
+          return {
+            ...item,
+            isDone: !item.isDone
+          }
+        }
+        return item;
+      })
+    }))
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
+          <input type="radio" id="radAll" value="All" checked="true"/>
+          <label htmlFor ="radAll">Show All</label>
+          <input type="radio" id="radPending" value="Pending"/>
+          <label htmlFor ="radPending">Pending</label>
+          <input type="radio" id="radDone" value="Done"/>
+          <label htmlFor ="radDone">Done</label>
+          <input type="text" id="inpTodo" placeholder="Add todo item" onChange={this.UpdateToDo} value={this.state.Todo}/>
+          <button onClick={this.AddTodoItem}> Add </button>
+          <ul>
+            {this.state.TodoItems.map(item=> (
+              <Todo
+                ToggleDone={this.ToggleDone}
+                item={item}
+                key={item.id}
+              />
+            ))
+            }
+          </ul>
         </header>
       </div>
     );
